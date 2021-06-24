@@ -49,9 +49,9 @@ namespace GradingSystem.Services
         {
             if (HasStudents())
             {
-                PrintStudents();
+                PrintHandler();
                 Console.Write("Provide ID of student you wish to update: ");
-                var studentID = GradingSystemService.GetOptionOrID();
+                var studentID = GradingSystemService.GetInt();
                 var student = studentRepository.GetStudent(studentID);
                 if (student == null)
                     Console.WriteLine(StudentException.NotFound());
@@ -72,9 +72,9 @@ namespace GradingSystem.Services
         {
             if (HasStudents())
             {
-                PrintStudents();
+                PrintHandler();
                 Console.Write("Provide ID of student you wish to remove: ");
-                var studentID = GradingSystemService.GetOptionOrID();
+                var studentID = GradingSystemService.GetInt();
                 var student = studentRepository.GetStudent(studentID);
                 if (student == null)
                     Console.WriteLine(StudentException.NotFound());
@@ -83,7 +83,7 @@ namespace GradingSystem.Services
             }
         }
 
-        public void PrintStudents()
+        public void PrintHandler()
         {
             if (HasStudents())
             {
@@ -93,6 +93,16 @@ namespace GradingSystem.Services
             {
                 Console.WriteLine(StudentException.EmptyTable());
             }
+        }
+
+        public List<Student> GetStudents()
+        {
+            return studentRepository.GetStudents();
+        }
+
+        public Student GetStudent(int studentID)
+        {
+            return studentRepository.GetStudent(studentID);
         }
     }
 }

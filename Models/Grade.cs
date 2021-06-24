@@ -10,6 +10,7 @@ namespace GradingSystem.Models
     {
         public int ID { get; set; }
         public int Value { get; set; }
+        public string Comment { get; set; }
 
         //Relations
         public int StudentID { get; set; }

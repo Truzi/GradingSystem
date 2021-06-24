@@ -1,5 +1,4 @@
 ﻿using GradingSystem.Data;
-using GradingSystem.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +14,7 @@ namespace GradingSystem.Services
 
         private readonly StudentService studentService = new();
         private readonly SubjectService subjectService = new();
-        private readonly GradeRepository gradeRepository = new ();
+        private readonly GradeService gradeService = new();
 
         public void Check()
         {
@@ -53,7 +52,7 @@ namespace GradingSystem.Services
             {
                 Menu.StudentMenu();
                 Console.Write("Provide an option (blank == exit): ");
-                option = GetOptionOrID();
+                option = GetInt();
                 switch (option)
                 {
                     case 1:
@@ -65,7 +64,7 @@ namespace GradingSystem.Services
                     case 3:
                         break;
                     case 4:
-                        studentService.PrintStudents();
+                        studentService.PrintHandler();
                         break;
                     case 0:
                         break;
@@ -83,7 +82,7 @@ namespace GradingSystem.Services
             {
                 Menu.SubjectMenu();
                 Console.Write("Provide an option (blank == exit): ");
-                option = GetOptionOrID();
+                option = GetInt();
                 switch (option)
                 {
                     case 1:
@@ -96,7 +95,7 @@ namespace GradingSystem.Services
                         subjectService.RemoveHandler();
                         break;
                     case 4:
-                        subjectService.PrintSubjects();
+                        subjectService.PrintHandler();
                         break;
                     case 0:
                         break;
@@ -114,24 +113,26 @@ namespace GradingSystem.Services
             {
                 Menu.GradeMenu();
                 Console.Write("Provide an option (blank == exit): ");
-                option = GetOptionOrID();
+                option = GetInt();
                 switch (option)
                 {
                     case 1:
-                        subjectService.AddHandler();
+                        gradeService.AddHandler();
                         break;
                     case 2:
-                        subjectService.UpdateHandler();
+                        gradeService.UpdateHandler();
                         break;
                     case 3:
-                        subjectService.RemoveHandler();
+                        gradeService.RemoveHandler();
                         break;
                     case 4:
-                        subjectService.PrintSubjects();
+                        gradeService.PrintHandlerSubject();
                         break;
                     case 5:
+                        gradeService.PrintHandlerStudent();
                         break;
                     case 6:
+                        gradeService.PrintHandler();
                         break;
                     case 0:
                         break;
@@ -142,7 +143,7 @@ namespace GradingSystem.Services
             } while (option != 0);
         }
 
-        public static int GetOptionOrID()
+        public static int GetInt()
         {
             int option;
             try

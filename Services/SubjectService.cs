@@ -1,4 +1,5 @@
 ﻿using GradingSystem.Exceptions;
+using GradingSystem.Models;
 using GradingSystem.Repositories;
 using System;
 using System.Collections.Generic;
@@ -47,9 +48,9 @@ namespace GradingSystem.Services
         {
             if (HasSubjects())
             {
-                PrintSubjects();
+                PrintHandler();
                 Console.Write("Provide ID of subject you wish to update: ");
-                var subjectID = GradingSystemService.GetOptionOrID();
+                var subjectID = GradingSystemService.GetInt();
                 var subject = subjectRepository.GetSubject(subjectID);
                 if (subject == null)
                     Console.WriteLine(StudentException.NotFound());
@@ -67,9 +68,9 @@ namespace GradingSystem.Services
         {
             if (HasSubjects())
             {
-                PrintSubjects();
+                PrintHandler();
                 Console.Write("Provide ID of subject you wish to remove: ");
-                var subjectID = GradingSystemService.GetOptionOrID();
+                var subjectID = GradingSystemService.GetInt();
                 var subject = subjectRepository.GetSubject(subjectID);
                 if (subject == null)
                     Console.WriteLine(StudentException.NotFound());
@@ -78,7 +79,7 @@ namespace GradingSystem.Services
             }
         }
 
-        public void PrintSubjects()
+        public void PrintHandler()
         {
             if (HasSubjects())
             {
@@ -89,6 +90,16 @@ namespace GradingSystem.Services
             {
                 Console.WriteLine(StudentException.EmptyTable());
             }
+        }
+
+        public List<Subject> GetSubjects()
+        {
+            return subjectRepository.GetSubjects();
+        }
+
+        public Subject GetSubject(int subjectID)
+        {
+            return subjectRepository.GetSubject(subjectID);
         }
     }
 }

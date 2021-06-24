@@ -17,7 +17,7 @@ namespace GradingSystem
                 do
                 {
                     Console.Write("Provide an option (blank == exit): ");
-                    option = GradingSystemService.GetOptionOrID();
+                    option = GradingSystemService.GetInt();
                 } while (!options.Contains(option));
                 gradingSystem.MainMenuHandler(option);
             } while (true);

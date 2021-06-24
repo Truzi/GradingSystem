@@ -22,7 +22,7 @@ namespace GradingSystem.Exceptions
 
         public static GradeException NotFound()
         {
-            return new GradeException("You provided wrong ID");
+            return new GradeException("Either student/subject does not exist or this student does not have grades in this subject");
         }
 
         public static GradeException EmptyTable()

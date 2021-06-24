@@ -10,22 +10,28 @@ namespace GradingSystem.Repositories
 {
     class GradeRepository
     {
-        public List<Grade> GetStudentGrades(Student student)
+        public List<Grade> GetStudentGrades(int studentID)
         {
             using var _db = new GradingSystemContext();
-            return _db.Grades.Where(x => x.StudentID == student.ID).ToList();
+            return _db.Grades.Where(x => x.StudentID == studentID).ToList();
         }
 
-        public List<Grade> GetSubjectGrades(Subject subject)
+        public List<Grade> GetSubjectGrades(int subjectID)
         {
             using var _db = new GradingSystemContext();
-            return _db.Grades.Where(x => x.SubjectID == subject.ID).ToList();
+            return _db.Grades.Where(x => x.SubjectID == subjectID).ToList();
         }
 
-        public List<Grade> GetGrades(Student student, Subject subject)
+        public Grade GetGrade(int gradeID)
         {
             using var _db = new GradingSystemContext();
-            return _db.Grades.Where(x => (x.StudentID == student.ID) && (x.SubjectID == subject.ID)).ToList();
+            return _db.Grades.FirstOrDefault(x => x.ID == gradeID);
+        }
+
+        public List<Grade> GetGrades(int studentID, int subjectID)
+        {
+            using var _db = new GradingSystemContext();
+            return _db.Grades.Where(x => (x.StudentID == studentID) && (x.SubjectID == subjectID)).ToList();
         }
 
         public List<Grade> GetAllGrades()
@@ -48,7 +54,7 @@ namespace GradingSystem.Repositories
             _db.SaveChanges();
         }
 
-        public void DeleteGrade(Grade grade)
+        public void RemoveGrade(Grade grade)
         {
             using var _db = new GradingSystemContext();
             _db.Remove(grade);
