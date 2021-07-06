@@ -13,5 +13,10 @@ namespace GradingSystem.Models
 
         //Relations
         public ICollection<Grade> Grades { get; set; }
+
+        public Subject(string name)
+        {
+            Name = name;
+        }
     }
 }

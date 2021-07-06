@@ -13,37 +13,33 @@ namespace GradingSystem.Services
     {
         private readonly SubjectRepository subjectRepository = new();
 
-        /*public bool HasSubjects()
+        public bool HasSubjects()
         {
             try
             {
-                // same as GradeService
-                return subjectRepository.GetSubjects().Any();
+                var subjects = subjectRepository.GetSubjects();
+                return subjects.Any();
             }
             catch
             {
-                Console.WriteLine(SubjectException.DbError());
-                return false;
+                throw SubjectException.DbError();
             }
         }
 
         public void AddHandler()
         {
-            string name;
+            string name = "";
             do
             {
-                Console.Write("Provide name: ");
-                name = Console.ReadLine();
-                // use string.IsNullOrWhiteSpace(name) instead
-            } while (name == "");
+                name = GradingSystemService.GetString("Provide subject name: ");
+            } while (string.IsNullOrWhiteSpace(name));
             try
             {
-                // I tried to add a subject with the same name and I got "There was a problem with connection to DB", quite descriptive ngl
-                subjectRepository.AddSubject(new Models.Subject { Name = name });
+                subjectRepository.AddSubject(new Subject(name));
             }
             catch
             {
-                Console.WriteLine(StudentException.DbError());
+                Console.WriteLine(SubjectException.AddError());
             }
         }
 
@@ -51,20 +47,38 @@ namespace GradingSystem.Services
         {
             if (HasSubjects())
             {
-                PrintHandler();
-                Console.Write("Provide ID of subject you wish to update: ");
-                var subjectID = GradingSystemService.GetInt();
-                var subject = subjectRepository.GetSubject(subjectID);
-                if (subject == null)
-                    Console.WriteLine(StudentException.NotFound());
-                else
+                PrintSubjects();
+                int subjectID = GradingSystemService.GetId();
+                try
                 {
-                    Console.Write("Provide new name or leave empty: ");
-                    var name = Console.ReadLine();
-                    // use string.IsNullOrWhiteSpace(name) instead
-                    subject.Name = name == "" ? subject.Name : name;
-                    subjectRepository.UpdateSubject(subject);
+                    var subject = subjectRepository.GetSubject(subjectID);
+                    if(subject != null)
+                    {
+                        string name = "";
+                        name = GradingSystemService.GetString("Provide subject name: ");
+                        subject.Name = string.IsNullOrWhiteSpace(name) ? subject.Name : name;
+
+                        try
+                        {
+                            subjectRepository.UpdateSubject(subject);
+                        }
+                        catch
+                        {
+                            Console.WriteLine(SubjectException.UpdateError());
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine(SubjectException.NotFound());
+                    }
                 }
+                catch
+                {
+                    Console.WriteLine(SubjectException.DbError());
+                }
+            } else
+            {
+                Console.WriteLine(SubjectException.EmptyTable());
             }
         }
 
@@ -72,18 +86,38 @@ namespace GradingSystem.Services
         {
             if (HasSubjects())
             {
-                PrintHandler();
-                Console.Write("Provide ID of subject you wish to remove: ");
-                var subjectID = GradingSystemService.GetInt();
-                var subject = subjectRepository.GetSubject(subjectID);
-                if (subject == null)
-                    Console.WriteLine(StudentException.NotFound());
-                else
-                    subjectRepository.RemoveSubject(subject);
+                PrintSubjects();
+                int subjectID = GradingSystemService.GetId();
+                try
+                {
+                    var subject = subjectRepository.GetSubject(subjectID);
+                    if (subject != null)
+                    {
+                        try
+                        {
+                            subjectRepository.RemoveSubject(subject);
+                        }
+                        catch
+                        {
+                            Console.WriteLine(SubjectException.RemoveError());
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine(SubjectException.NotFound());
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine(SubjectException.DbError());
+                }
+            } else
+            {
+                Console.WriteLine(SubjectException.EmptyTable());
             }
         }
 
-        public void PrintHandler()
+        public void PrintSubjects()
         {
             if (HasSubjects())
             {
@@ -92,7 +126,7 @@ namespace GradingSystem.Services
             }
             else
             {
-                Console.WriteLine(StudentException.EmptyTable());
+                Console.WriteLine(SubjectException.EmptyTable());
             }
         }
 
@@ -104,6 +138,6 @@ namespace GradingSystem.Services
         public Subject GetSubject(int subjectID)
         {
             return subjectRepository.GetSubject(subjectID);
-        }*/
+        }
     }
 }

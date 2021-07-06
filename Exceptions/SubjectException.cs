@@ -17,7 +17,7 @@ namespace GradingSystem.Exceptions
 
         public static SubjectException DbError()
         {
-            return new SubjectException("There was a problem with connection to DB");
+            return new SubjectException("Error with connection to DB");
         }
 
         public static SubjectException NotFound()
@@ -27,7 +27,22 @@ namespace GradingSystem.Exceptions
 
         public static SubjectException EmptyTable()
         {
-            return new SubjectException("Table 'Students' is currently empty\n");
+            return new SubjectException("Table 'Subjects' is currently empty\n");
+        }
+
+        public static SubjectException AddError()
+        {
+            return new SubjectException("Error while adding new subject. Check if subject with same name exists already");
+        }
+
+        public static SubjectException UpdateError()
+        {
+            return new SubjectException("Error while updating subject. Check if subject with same name exists already");
+        }
+
+        public static SubjectException RemoveError()
+        {
+            return new SubjectException("Error while removing subject");
         }
     }
 }

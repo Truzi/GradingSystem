@@ -16,7 +16,7 @@ namespace GradingSystem
             do
             {
                 Menu.MainMenu();
-                option = GradingSystemService.GetOption("Provide option: ");
+                option = GradingSystemService.GetOption();
                 GradingSystemService gradingSystemService = new();
                 gradingSystemService.MainMenuHandler(option);
             } while (true);

@@ -17,7 +17,7 @@ namespace GradingSystem.Exceptions
 
         public static StudentException DbError()
         {
-            return new StudentException("There was a problem with connection to DB");
+            return new StudentException("Error with connection to DB");
         }
 
         public static StudentException NotFound()
@@ -32,17 +32,17 @@ namespace GradingSystem.Exceptions
 
         public static StudentException AddError()
         {
-            return new StudentException("Error with adding new student");
+            return new StudentException("Error while adding new student");
         }
 
         public static StudentException UpdateError()
         {
-            return new StudentException("Error with updating student");
+            return new StudentException("Error while updating student");
         }
 
         public static StudentException RemoveError()
         {
-            return new StudentException("Error with removing student");
+            return new StudentException("Error while removing student");
         }
     }
 }

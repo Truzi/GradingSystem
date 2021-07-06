@@ -106,7 +106,7 @@ namespace GradingSystem.Services
                         subjectService.RemoveHandler();
                         break;
                     case 4:
-                        subjectService.PrintHandler();
+                        subjectService.PrintSubjects();
                         break;
                     case 0:
                         break;
@@ -175,15 +175,9 @@ namespace GradingSystem.Services
             return int.Parse(Console.ReadLine());
         }
 
-        public static string GetFirstName()
+        public static string GetString(string msg)
         {
-            Console.Write("Provide first name: ");
-            return Console.ReadLine();
-        }
-
-        public static string GetLastName()
-        {
-            Console.Write("Provide last name: ");
+            Console.Write(msg);
             return Console.ReadLine();
         }
     }

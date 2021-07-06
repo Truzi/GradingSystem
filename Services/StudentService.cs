@@ -12,9 +12,19 @@ namespace GradingSystem.Services
     {
         private readonly StudentRepository studentRepository = new();
 
+        // is it better handling it like that?
+        // i thout that if there is problem with DB the program should better shut down right here, than continue
         public bool HasStudents()
         {
-            return studentRepository.GetStudents().Any();
+            try
+            {
+                var students = studentRepository.GetStudents();
+                return students.Any();
+            }
+            catch
+            {
+                throw StudentException.DbError();
+            }
         }
 
         public void AddStudent()
@@ -23,19 +33,21 @@ namespace GradingSystem.Services
             bool isEmpty;
             do
             {
-                first = GradingSystemService.GetFirstName();
-                last = GradingSystemService.GetLastName();
+                first = GradingSystemService.GetString("Provide first name: ");
+                last = GradingSystemService.GetString("Provide last name: ");
                 isEmpty = string.IsNullOrWhiteSpace(first) || string.IsNullOrWhiteSpace(last);
             } while (isEmpty);
             try
             {
-                studentRepository.AddStudent(new Models.Student(first, last));
+                studentRepository.AddStudent(new Student(first, last));
             } catch
             {
                 Console.WriteLine(StudentException.AddError());
             }
         }
 
+        // is nesting try{}catch{} & if{}else{} like that leigt or am I mentally disabled?
+        // same goes for removeStudent and subjectService part
         public void UpdateStudent()
         {
             if (HasStudents())
@@ -48,8 +60,8 @@ namespace GradingSystem.Services
                     if(student != null)
                     {
                         string first = "", last = "";
-                        first = GradingSystemService.GetFirstName();
-                        last = GradingSystemService.GetLastName();
+                        first = GradingSystemService.GetString("Provide first name: ");
+                        last = GradingSystemService.GetString("Provide last name: ");
                         student.First = string.IsNullOrWhiteSpace(first) ? student.First : first;
                         student.Last = string.IsNullOrWhiteSpace(last) ? student.Last : last;
 
