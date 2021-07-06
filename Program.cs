@@ -1,25 +1,24 @@
 ﻿using GradingSystem.Services;
 using System;
 using System.Linq;
+using static GradingSystem.Services.Dependencies.OptionsEnum;
+using static GradingSystem.ExtensionMethods.IntExtensions;
 
 namespace GradingSystem
 {
     static class Program
     {
+        
+
         static void Main()
         {
-            int option = 0;
-            int[] options = { 0, 1, 2, 3 };
-            GradingSystemService gradingSystem = new();
+            int option;
             do
             {
                 Menu.MainMenu();
-                do
-                {
-                    Console.Write("Provide an option (blank == exit): ");
-                    option = GradingSystemService.GetInt();
-                } while (!options.Contains(option));
-                gradingSystem.MainMenuHandler(option);
+                option = GradingSystemService.GetOption("Provide option: ");
+                GradingSystemService gradingSystemService = new();
+                gradingSystemService.MainMenuHandler(option);
             } while (true);
         }
     }

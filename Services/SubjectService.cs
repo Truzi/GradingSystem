@@ -13,10 +13,11 @@ namespace GradingSystem.Services
     {
         private readonly SubjectRepository subjectRepository = new();
 
-        public bool HasSubjects()
+        /*public bool HasSubjects()
         {
             try
             {
+                // same as GradeService
                 return subjectRepository.GetSubjects().Any();
             }
             catch
@@ -33,9 +34,11 @@ namespace GradingSystem.Services
             {
                 Console.Write("Provide name: ");
                 name = Console.ReadLine();
+                // use string.IsNullOrWhiteSpace(name) instead
             } while (name == "");
             try
             {
+                // I tried to add a subject with the same name and I got "There was a problem with connection to DB", quite descriptive ngl
                 subjectRepository.AddSubject(new Models.Subject { Name = name });
             }
             catch
@@ -58,6 +61,7 @@ namespace GradingSystem.Services
                 {
                     Console.Write("Provide new name or leave empty: ");
                     var name = Console.ReadLine();
+                    // use string.IsNullOrWhiteSpace(name) instead
                     subject.Name = name == "" ? subject.Name : name;
                     subjectRepository.UpdateSubject(subject);
                 }
@@ -83,7 +87,7 @@ namespace GradingSystem.Services
         {
             if (HasSubjects())
             {
-                subjectRepository.GetSubjects().ForEach(x => Console.WriteLine($"{x.ID}. {x.Name}"));
+                subjectRepository.GetSubjects().ForEach(x => Console.WriteLine($"{x.Id}. {x.Name}"));
                 Console.WriteLine(new string('-', Menu.repeat));
             }
             else
@@ -100,6 +104,6 @@ namespace GradingSystem.Services
         public Subject GetSubject(int subjectID)
         {
             return subjectRepository.GetSubject(subjectID);
-        }
+        }*/
     }
 }

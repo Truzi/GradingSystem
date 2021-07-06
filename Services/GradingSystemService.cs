@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using GradingSystem.Exceptions;
+using GradingSystem.ExtensionMethods;
+using static GradingSystem.Services.Dependencies.OptionsEnum;
 
 namespace GradingSystem.Services
 {
@@ -16,73 +19,81 @@ namespace GradingSystem.Services
         private readonly SubjectService subjectService = new();
         private readonly GradeService gradeService = new();
 
-        public void Check()
+        enum MainOptions
+        {
+            Exit, Students, Subjects, Grades, Incorrect
+        }
+
+        public void IsDbCreated()
         {
             _db.Database.EnsureCreated();
         }
 
         public void MainMenuHandler(int option)
         {
-            Check();
+            IsDbCreated();
+
             switch (option)
             {
-                case 1:
+                case (int)MainOptions.Students:
                     StudentHandler();
                     break;
-                case 2:
+                case (int)MainOptions.Subjects:
                     SubjectHandler();
                     break;
-                case 3:
-                    GradeHandler();
+                case (int)MainOptions.Grades:
+                    //GradeHandler();
                     break;
-                case 0:
+                case (int)MainOptions.Exit:
                     Environment.Exit(1);
                     break;
-                default:
-                    Console.WriteLine("You provided wrong option, try again");
+                case (int)GeneralOptions.Incorrect:
+                    //is this the correct way of handling things if i don't want program to close if the exception is met?
+                    Console.WriteLine(GradingSystemException.GetOption());
                     break;
+                    //default case should never be accessed -> remove it?
             }
         }
+        
 
-        //StudentHandler & dependencies
         private void StudentHandler()
         {
             int option;
             do
             {
                 Menu.StudentMenu();
-                Console.Write("Provide an option (blank == exit): ");
-                option = GetInt();
+                option = GetOption();
                 switch (option)
                 {
-                    case 1:
-                        studentService.AddHandler();
+                    case (int)StudentOptions.Add:
+                        studentService.AddStudent();
                         break;
-                    case 2:
-                        studentService.UpdateHandler();
+                    case (int)StudentOptions.Update:
+                        studentService.UpdateStudent();
                         break;
-                    case 3:
+                    case (int)StudentOptions.Remove:
+                        studentService.RemoveStudent();
                         break;
-                    case 4:
-                        studentService.PrintHandler();
+                    case (int)StudentOptions.Print:
+                        studentService.PrintStudents();
                         break;
-                    case 0:
+                    case (int)StudentOptions.Exit:
                         break;
-                    default:
-                        Console.WriteLine("You provided wrong option, try again");
+                    case (int)GeneralOptions.Incorrect:
+                        //same as above
+                        Console.WriteLine(GradingSystemException.GetOption());
                         break;
                 }
-            } while (option != 0);
+            } while (option != (int)StudentOptions.Exit);
         }
-
+        
         private void SubjectHandler()
         {
             int option;
             do
             {
                 Menu.SubjectMenu();
-                Console.Write("Provide an option (blank == exit): ");
-                option = GetInt();
+                option = GetOption();
                 switch (option)
                 {
                     case 1:
@@ -105,7 +116,7 @@ namespace GradingSystem.Services
                 }
             } while (option != 0);
         }
-
+        /*
         private void GradeHandler()
         {
             int option;
@@ -141,20 +152,39 @@ namespace GradingSystem.Services
                         break;
                 }
             } while (option != 0);
-        }
+        }*/
 
-        public static int GetInt()
+
+
+        public static int GetOption()
         {
-            int option;
+            Console.Write("Provide option: ");
             try
             {
-                option = Console.ReadLine()[0] - '0';
+                return int.Parse(Console.ReadLine());
             }
             catch
             {
-                option = 0;
+                return (int)GeneralOptions.Incorrect;
             }
-            return option;
+        }
+
+        public static int GetId()
+        {
+            Console.Write("Provide ID: ");
+            return int.Parse(Console.ReadLine());
+        }
+
+        public static string GetFirstName()
+        {
+            Console.Write("Provide first name: ");
+            return Console.ReadLine();
+        }
+
+        public static string GetLastName()
+        {
+            Console.Write("Provide last name: ");
+            return Console.ReadLine();
         }
     }
 }

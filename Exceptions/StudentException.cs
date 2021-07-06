@@ -29,5 +29,20 @@ namespace GradingSystem.Exceptions
         {
             return new StudentException("Table 'Students' is currently empty\n");
         }
+
+        public static StudentException AddError()
+        {
+            return new StudentException("Error with adding new student");
+        }
+
+        public static StudentException UpdateError()
+        {
+            return new StudentException("Error with updating student");
+        }
+
+        public static StudentException RemoveError()
+        {
+            return new StudentException("Error with removing student");
+        }
     }
 }

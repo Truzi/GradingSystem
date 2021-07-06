@@ -2,11 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GradingSystem.Models;
 using GradingSystem.Exceptions;
-using System.Text.RegularExpressions;
+using GradingSystem.ExtensionMethods;
 
 namespace GradingSystem.Services
 {
@@ -16,78 +14,110 @@ namespace GradingSystem.Services
 
         public bool HasStudents()
         {
-            try
-            {
-                return studentRepository.GetStudents().Any();
-            } catch
-            {
-                Console.WriteLine(StudentException.DbError());
-                return false;
-            }
+            return studentRepository.GetStudents().Any();
         }
 
-        public void AddHandler()
+        public void AddStudent()
         {
-            string first, last;
+            string first = "", last = "";
+            bool isEmpty;
             do
             {
-                Console.Write("Provide first name: ");
-                first = Console.ReadLine();
-                Console.Write("Provide last name: ");
-                last = Console.ReadLine();
-            } while (first == "" || last == "");
-                try
-                {
-                studentRepository.AddStudent(new Models.Student { First = first, Last = last });
+                first = GradingSystemService.GetFirstName();
+                last = GradingSystemService.GetLastName();
+                isEmpty = string.IsNullOrWhiteSpace(first) || string.IsNullOrWhiteSpace(last);
+            } while (isEmpty);
+            try
+            {
+                studentRepository.AddStudent(new Models.Student(first, last));
             } catch
             {
-                Console.WriteLine(StudentException.DbError());
+                Console.WriteLine(StudentException.AddError());
             }
         }
 
-        public void UpdateHandler()
+        public void UpdateStudent()
         {
             if (HasStudents())
             {
-                PrintHandler();
-                Console.Write("Provide ID of student you wish to update: ");
-                var studentID = GradingSystemService.GetInt();
-                var student = studentRepository.GetStudent(studentID);
-                if (student == null)
-                    Console.WriteLine(StudentException.NotFound());
-                else
+                PrintStudents();
+                int studentID = GradingSystemService.GetId();
+                try
                 {
-                    Console.Write("Provide new first name or leave empty: ");
-                    var first = Console.ReadLine();
-                    Console.Write("Provide new last name or leave empty: ");
-                    var last = Console.ReadLine();
-                    student.First = first == "" ? student.First : first;
-                    student.Last = last == "" ? student.Last : last;
-                    studentRepository.UpdateStudent(student);
+                    var student = studentRepository.GetStudent(studentID);
+                    if(student != null)
+                    {
+                        string first = "", last = "";
+                        first = GradingSystemService.GetFirstName();
+                        last = GradingSystemService.GetLastName();
+                        student.First = string.IsNullOrWhiteSpace(first) ? student.First : first;
+                        student.Last = string.IsNullOrWhiteSpace(last) ? student.Last : last;
+
+                        try
+                        {
+                            studentRepository.UpdateStudent(student);
+                        }
+                        catch
+                        {
+                            Console.WriteLine(StudentException.UpdateError());
+                        }
+                    } else
+                    {
+                        Console.WriteLine(StudentException.NotFound());
+                    }
+
+                }catch
+                {
+                    Console.WriteLine(StudentException.DbError());
                 }
             }
-        }
-
-        public void RemoveHandler()
-        {
-            if (HasStudents())
+            else
             {
-                PrintHandler();
-                Console.Write("Provide ID of student you wish to remove: ");
-                var studentID = GradingSystemService.GetInt();
-                var student = studentRepository.GetStudent(studentID);
-                if (student == null)
-                    Console.WriteLine(StudentException.NotFound());
-                else
-                    studentRepository.RemoveStudent(student);
+                Console.WriteLine(StudentException.EmptyTable());
             }
         }
 
-        public void PrintHandler()
+        public void RemoveStudent()
         {
             if (HasStudents())
             {
-                studentRepository.GetStudents().ForEach(x => Console.WriteLine($"{x.ID}. {x.First} {x.Last}"));
+                PrintStudents();
+                int studentID = GradingSystemService.GetId();
+                try
+                {
+                    var student = studentRepository.GetStudent(studentID);
+                    if (student != null)
+                    {
+                        try
+                        {
+                            studentRepository.RemoveStudent(student);
+                        }
+                        catch
+                        {
+                            Console.WriteLine(StudentException.RemoveError());
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine(StudentException.NotFound());
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine(StudentException.DbError());
+                }
+            }
+            else
+            {
+                Console.WriteLine(StudentException.EmptyTable());
+            }
+        }
+
+        public void PrintStudents()
+        {
+            if (HasStudents())
+            {
+                studentRepository.GetStudents().ForEach(x => Console.WriteLine($"{x.Id}. {x.First} {x.Last}"));
                 Console.WriteLine(new string('-', Menu.repeat));
             } else
             {

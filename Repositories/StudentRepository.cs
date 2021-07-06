@@ -13,7 +13,7 @@ namespace GradingSystem.Repositories
         public Student GetStudent(int studentID)
         {
             using var _db = new GradingSystemContext();
-            return _db.Students.FirstOrDefault(x => x.ID == studentID);
+            return _db.Students.FirstOrDefault(x => x.Id == studentID);
         }
 
         public List<Student> GetStudents()
@@ -24,22 +24,29 @@ namespace GradingSystem.Repositories
 
         public void AddStudent(Student student)
         {
-            using var _db = new GradingSystemContext();
-            _db.Add(student);
-            _db.SaveChanges();
+            using (var _db = new GradingSystemContext())
+            {
+                _db.Add(student);
+                _db.SaveChanges();
+            }
         }
         
         public void UpdateStudent(Student student)
         {
-            using var _db = new GradingSystemContext();
-            _db.Update(student);
-            _db.SaveChanges();
+            using (var _db = new GradingSystemContext())
+            {
+                _db.Update(student);
+                _db.SaveChanges();
+            }
         }
 
         public void RemoveStudent(Student student)
         {
-            using var _db = new GradingSystemContext();
-            _db.Remove(student);
+            using (var _db = new GradingSystemContext())
+            {
+                _db.Remove(student);
+                _db.SaveChanges();
+            }
         }
     }
 }

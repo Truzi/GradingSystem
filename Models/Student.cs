@@ -8,11 +8,17 @@ namespace GradingSystem.Models
 {
     class Student
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string First { get; set; }
         public string Last { get; set; }
 
         //Relations
         public ICollection<Grade> Grades { get; set; }
+
+        public Student(string first, string last)
+        {
+            First = first;
+            Last = last;
+        }
     }
 }

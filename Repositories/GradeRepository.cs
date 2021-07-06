@@ -10,28 +10,22 @@ namespace GradingSystem.Repositories
 {
     class GradeRepository
     {
-        public List<Grade> GetStudentGrades(int studentID)
+        public List<Grade> GetGradesForStudent(int studentID)
         {
             using var _db = new GradingSystemContext();
-            return _db.Grades.Where(x => x.StudentID == studentID).ToList();
+            return _db.Grades.Where(x => x.StudentId == studentID).ToList();
         }
 
-        public List<Grade> GetSubjectGrades(int subjectID)
+        public List<Grade> GetGradesForSubject(int subjectID)
         {
             using var _db = new GradingSystemContext();
-            return _db.Grades.Where(x => x.SubjectID == subjectID).ToList();
-        }
-
-        public Grade GetGrade(int gradeID)
-        {
-            using var _db = new GradingSystemContext();
-            return _db.Grades.FirstOrDefault(x => x.ID == gradeID);
+            return _db.Grades.Where(x => x.SubjectId == subjectID).ToList();
         }
 
         public List<Grade> GetGrades(int studentID, int subjectID)
         {
             using var _db = new GradingSystemContext();
-            return _db.Grades.Where(x => (x.StudentID == studentID) && (x.SubjectID == subjectID)).ToList();
+            return _db.Grades.Where(x => (x.StudentId == studentID) && (x.SubjectId == subjectID)).ToList();
         }
 
         public List<Grade> GetAllGrades()
@@ -42,23 +36,29 @@ namespace GradingSystem.Repositories
 
         public void AddGrade(Grade grade)
         {
-            using var _db = new GradingSystemContext();
-            _db.Add(grade);
-            _db.SaveChanges();
+            using (var _db = new GradingSystemContext())
+            {
+                _db.Add(grade);
+                _db.SaveChanges();
+            }
         }
 
         public void UpdateGrade(Grade grade)
         {
-            using var _db = new GradingSystemContext();
-            _db.Update(grade);
-            _db.SaveChanges();
+            using (var _db = new GradingSystemContext())
+            {
+                _db.Update(grade);
+                _db.SaveChanges();
+            }
         }
 
         public void RemoveGrade(Grade grade)
         {
-            using var _db = new GradingSystemContext();
-            _db.Remove(grade);
-            _db.SaveChanges();
+            using (var _db = new GradingSystemContext())
+            {
+                _db.Remove(grade);
+                _db.SaveChanges();
+            }
         }
     }
 }
