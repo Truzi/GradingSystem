@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GradingSystem.Exceptions
 {
@@ -32,17 +28,17 @@ namespace GradingSystem.Exceptions
 
         public static StudentException AddError()
         {
-            return new StudentException("Error while adding new student");
+            return new StudentException("Error occured while adding new student");
         }
 
         public static StudentException UpdateError()
         {
-            return new StudentException("Error while updating student");
+            return new StudentException("Error occured while updating student");
         }
 
         public static StudentException RemoveError()
         {
-            return new StudentException("Error while removing student");
+            return new StudentException("Error occured while removing student");
         }
     }
 }

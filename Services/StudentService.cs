@@ -12,129 +12,98 @@ namespace GradingSystem.Services
     {
         private readonly StudentRepository studentRepository = new();
 
-        // is it better handling it like that?
-        // i thout that if there is problem with DB the program should better shut down right here, than continue
         public bool HasStudents()
         {
-            try
-            {
-                var students = studentRepository.GetStudents();
-                return students.Any();
-            }
-            catch
-            {
-                throw StudentException.DbError();
-            }
+            var students = studentRepository.GetStudents();
+            if(!students.Any())
+                throw SubjectException.EmptyTable();
+
+            return true;
         }
 
         public void AddStudent()
         {
-            string first = "", last = "";
-            bool isEmpty;
+            string first, last;
+            bool shouldExit;
             do
             {
                 first = GradingSystemService.GetString("Provide first name: ");
                 last = GradingSystemService.GetString("Provide last name: ");
-                isEmpty = string.IsNullOrWhiteSpace(first) || string.IsNullOrWhiteSpace(last);
-            } while (isEmpty);
+                shouldExit = string.IsNullOrWhiteSpace(first) || string.IsNullOrWhiteSpace(last);
+            } while (shouldExit);
             try
             {
                 studentRepository.AddStudent(new Student(first, last));
             } catch
             {
-                Console.WriteLine(StudentException.AddError());
+                throw SubjectException.AddError();
             }
         }
 
-        // is nesting try{}catch{} & if{}else{} like that leigt or am I mentally disabled?
-        // same goes for removeStudent and subjectService part
         public void UpdateStudent()
         {
-            if (HasStudents())
+            try
             {
                 PrintStudents();
-                int studentID = GradingSystemService.GetId();
                 try
                 {
-                    var student = studentRepository.GetStudent(studentID);
-                    if(student != null)
-                    {
-                        string first = "", last = "";
-                        first = GradingSystemService.GetString("Provide first name: ");
-                        last = GradingSystemService.GetString("Provide last name: ");
-                        student.First = string.IsNullOrWhiteSpace(first) ? student.First : first;
-                        student.Last = string.IsNullOrWhiteSpace(last) ? student.Last : last;
+                    var student = GetStudent(GradingSystemService.GetInt());
+                    string first = GradingSystemService.GetString("Provide first name: ");
+                    string last = GradingSystemService.GetString("Provide last name: ");
+                    student.First = string.IsNullOrWhiteSpace(first) ? student.First : first;
+                    student.Last = string.IsNullOrWhiteSpace(last) ? student.Last : last;
 
-                        try
-                        {
-                            studentRepository.UpdateStudent(student);
-                        }
-                        catch
-                        {
-                            Console.WriteLine(StudentException.UpdateError());
-                        }
-                    } else
+                    try
                     {
-                        Console.WriteLine(StudentException.NotFound());
+                        studentRepository.UpdateStudent(student);
                     }
-
-                }catch
+                    catch
+                    {
+                        throw SubjectException.UpdateError();
+                    }
+                } catch (SubjectException exNotFound)
                 {
-                    Console.WriteLine(StudentException.DbError());
+                    Console.WriteLine(exNotFound.Message);
                 }
             }
-            else
+            catch(SubjectException exEmptyTable)
             {
-                Console.WriteLine(StudentException.EmptyTable());
+                Console.WriteLine(exEmptyTable.Message);
             }
         }
 
         public void RemoveStudent()
         {
-            if (HasStudents())
+            try
             {
                 PrintStudents();
-                int studentID = GradingSystemService.GetId();
                 try
                 {
-                    var student = studentRepository.GetStudent(studentID);
-                    if (student != null)
+                    var student = GetStudent(GradingSystemService.GetInt());
+                    try
                     {
-                        try
-                        {
-                            studentRepository.RemoveStudent(student);
-                        }
-                        catch
-                        {
-                            Console.WriteLine(StudentException.RemoveError());
-                        }
+                        studentRepository.RemoveStudent(student);
                     }
-                    else
+                    catch
                     {
-                        Console.WriteLine(StudentException.NotFound());
+                        throw SubjectException.RemoveError();
                     }
-                }
-                catch
+                } catch(SubjectException exNotFound)
                 {
-                    Console.WriteLine(StudentException.DbError());
+                    Console.WriteLine(exNotFound.Message);
                 }
-            }
-            else
+                
+            } catch(SubjectException exEmptyTable)
             {
-                Console.WriteLine(StudentException.EmptyTable());
+                Console.WriteLine(exEmptyTable.Message);
             }
         }
 
         public void PrintStudents()
         {
-            if (HasStudents())
-            {
-                studentRepository.GetStudents().ForEach(x => Console.WriteLine($"{x.Id}. {x.First} {x.Last}"));
-                Console.WriteLine(new string('-', Menu.repeat));
-            } else
-            {
-                Console.WriteLine(StudentException.EmptyTable());
-            }
+            HasStudents();
+            studentRepository.GetStudents().ForEach(x => Console.WriteLine($"{x.Id}. {x.First} {x.Last}"));
+            Console.WriteLine(new string('-', Menu.repeat));
         }
 
         public List<Student> GetStudents()
@@ -144,7 +113,11 @@ namespace GradingSystem.Services
 
         public Student GetStudent(int studentID)
         {
-            return studentRepository.GetStudent(studentID);
+            var student = studentRepository.GetStudent(studentID);
+            if (student == null)
+                throw SubjectException.NotFound();
+
+            return student;
         }
     }
 }

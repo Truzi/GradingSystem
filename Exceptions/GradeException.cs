@@ -29,5 +29,15 @@ namespace GradingSystem.Exceptions
         {
             return new GradeException("Table 'Grades' is currently empty\n");
         }
+
+        public static GradeException NoStudentsOrSubjects()
+        {
+            return new GradeException("Table 'Students' and/or 'Subjects is currently empty\n");
+        }
+
+        public static GradeException AddError()
+        {
+            return new GradeException("Error occured while adding grade");
+        }
     }
 }

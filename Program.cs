@@ -1,7 +1,7 @@
 ﻿using GradingSystem.Services;
 using System;
 using System.Linq;
-using static GradingSystem.Services.Dependencies.OptionsEnum;
+using GradingSystem.Services.Utilities;
 using static GradingSystem.ExtensionMethods.IntExtensions;
 
 namespace GradingSystem
@@ -16,7 +16,7 @@ namespace GradingSystem
             do
             {
                 Menu.MainMenu();
-                option = GradingSystemService.GetOption();
+                option = GradingSystemService.GetInt();
                 GradingSystemService gradingSystemService = new();
                 gradingSystemService.MainMenuHandler(option);
             } while (true);

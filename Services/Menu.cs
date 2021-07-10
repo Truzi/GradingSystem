@@ -42,12 +42,29 @@ namespace GradingSystem.Services
 
         public static void GradeMenu()
         {
+            Console.WriteLine("1. Access student");
+            Console.WriteLine("2. Access subject");
+            Console.WriteLine("0. Exit to upper menu");
+            Console.WriteLine(new string('-', repeat));
+        }
+
+        public static void GradeStudentMenu()
+        {
             Console.WriteLine("1. Add grade");
             Console.WriteLine("2. Update grade");
             Console.WriteLine("3. Remove grade");
-            Console.WriteLine("4. Show grades for one subject");
-            Console.WriteLine("5. Show grades for one student");
-            Console.WriteLine("6. Show grades for one student from one particular subject");
+            Console.WriteLine("4. Show all grades");
+            Console.WriteLine("5. Show grades from one subject");
+            Console.WriteLine("0. Exit to upper menu");
+            Console.WriteLine(new string('-', repeat));
+        }
+
+        public static void GradeSubjectMenu()
+        {
+            Console.WriteLine("1. Add grades");
+            Console.WriteLine("2. Update grades");
+            Console.WriteLine("3. Remove grades");
+            Console.WriteLine("4. Show grades for this subject");
             Console.WriteLine("0. Exit to upper menu");
             Console.WriteLine(new string('-', repeat));
         }

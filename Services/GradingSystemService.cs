@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GradingSystem.Exceptions;
 using GradingSystem.ExtensionMethods;
-using static GradingSystem.Services.Dependencies.OptionsEnum;
+using GradingSystem.Services.Utilities;
 
 namespace GradingSystem.Services
 {
@@ -18,11 +18,6 @@ namespace GradingSystem.Services
         private readonly StudentService studentService = new();
         private readonly SubjectService subjectService = new();
         private readonly GradeService gradeService = new();
-
-        enum MainOptions
-        {
-            Exit, Students, Subjects, Grades, Incorrect
-        }
 
         public void IsDbCreated()
         {
@@ -42,16 +37,14 @@ namespace GradingSystem.Services
                     SubjectHandler();
                     break;
                 case (int)MainOptions.Grades:
-                    //GradeHandler();
+                    GradeHandler();
                     break;
                 case (int)MainOptions.Exit:
                     Environment.Exit(1);
                     break;
-                case (int)GeneralOptions.Incorrect:
-                    //is this the correct way of handling things if i don't want program to close if the exception is met?
-                    Console.WriteLine(GradingSystemException.GetOption());
+                default:
+                    IncorrectOption();
                     break;
-                    //default case should never be accessed -> remove it?
             }
         }
         
@@ -62,123 +55,139 @@ namespace GradingSystem.Services
             do
             {
                 Menu.StudentMenu();
-                option = GetOption();
+                option = GetInt();
                 switch (option)
                 {
                     case (int)StudentOptions.Add:
-                        studentService.AddStudent();
+                        try
+                        {
+                            studentService.AddStudent();
+                        } catch(SubjectException ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
                         break;
                     case (int)StudentOptions.Update:
-                        studentService.UpdateStudent();
+                        try
+                        {
+                            studentService.UpdateStudent();
+                        } catch(SubjectException ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
                         break;
                     case (int)StudentOptions.Remove:
-                        studentService.RemoveStudent();
+                        try
+                        {
+                            studentService.RemoveStudent();
+                        } catch (SubjectException ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
                         break;
                     case (int)StudentOptions.Print:
-                        studentService.PrintStudents();
+                        try
+                        {
+                            studentService.PrintStudents();
+                        } catch (SubjectException ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
                         break;
-                    case (int)StudentOptions.Exit:
+                    case (int)MainOptions.Exit:
                         break;
-                    case (int)GeneralOptions.Incorrect:
-                        //same as above
-                        Console.WriteLine(GradingSystemException.GetOption());
+                    default:
+                        IncorrectOption();
                         break;
                 }
-            } while (option != (int)StudentOptions.Exit);
+            } while (!option.IsExit());
         }
-        
+
         private void SubjectHandler()
         {
             int option;
             do
             {
                 Menu.SubjectMenu();
-                option = GetOption();
+                option = GetInt();
                 switch (option)
                 {
-                    case 1:
-                        subjectService.AddHandler();
+                    case (int)SubjectOptions.Add:
+                        try
+                        {
+                            subjectService.AddSubject();
+                        } catch (SubjectException ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
                         break;
-                    case 2:
-                        subjectService.UpdateHandler();
+                    case (int)SubjectOptions.Update:
+                        subjectService.UpdateSubject();
                         break;
-                    case 3:
-                        subjectService.RemoveHandler();
+                    case (int)SubjectOptions.Remove:
+                        subjectService.RemoveSubject();
                         break;
-                    case 4:
+                    case (int)SubjectOptions.Print:
                         subjectService.PrintSubjects();
                         break;
-                    case 0:
+                    case (int)MainOptions.Exit:
                         break;
                     default:
-                        Console.WriteLine("You provided wrong option, try again");
+                        IncorrectOption();
                         break;
                 }
-            } while (option != 0);
+            } while (!option.IsExit());
         }
-        /*
+
         private void GradeHandler()
         {
             int option;
             do
             {
                 Menu.GradeMenu();
-                Console.Write("Provide an option (blank == exit): ");
                 option = GetInt();
                 switch (option)
                 {
-                    case 1:
-                        gradeService.AddHandler();
+                    case (int)GradeOptions.AccessStudent:
+                        studentService.PrintStudents();
+                        //program will ask for Id even if 'PrintStudents()' will show that table is empty
+                        //that is because i only Write Exception to the console, how can I overcome that (simple solution please)
+                        gradeService.AccessStudent(GetInt());
                         break;
-                    case 2:
-                        gradeService.UpdateHandler();
+                    case (int)GradeOptions.AccessSubject:
+                        subjectService.PrintSubjects();
+                        //same as above
+                        gradeService.AccessSubject(GetInt());
                         break;
-                    case 3:
-                        gradeService.RemoveHandler();
-                        break;
-                    case 4:
-                        gradeService.PrintHandlerSubject();
-                        break;
-                    case 5:
-                        gradeService.PrintHandlerStudent();
-                        break;
-                    case 6:
-                        gradeService.PrintHandler();
-                        break;
-                    case 0:
+                    case (int)MainOptions.Exit:
                         break;
                     default:
-                        Console.WriteLine("You provided wrong option, try again");
+                        IncorrectOption();
                         break;
                 }
             } while (option != 0);
-        }*/
-
-
-
-        public static int GetOption()
-        {
-            Console.Write("Provide option: ");
-            try
-            {
-                return int.Parse(Console.ReadLine());
-            }
-            catch
-            {
-                return (int)GeneralOptions.Incorrect;
-            }
         }
 
-        public static int GetId()
+
+
+        public static int GetInt()
         {
-            Console.Write("Provide ID: ");
-            return int.Parse(Console.ReadLine());
+            Console.Write("Provide number (blank = 0): ");
+            if (!int.TryParse(Console.ReadLine(), out int i))
+                return 0;
+            
+            return i;
         }
 
         public static string GetString(string msg)
         {
             Console.Write(msg);
             return Console.ReadLine();
+        }
+
+        public static void IncorrectOption()
+        {
+            Console.WriteLine("Incorrect option");
         }
     }
 }

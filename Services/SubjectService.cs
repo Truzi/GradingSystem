@@ -4,8 +4,6 @@ using GradingSystem.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GradingSystem.Services
 {
@@ -15,20 +13,16 @@ namespace GradingSystem.Services
 
         public bool HasSubjects()
         {
-            try
-            {
-                var subjects = subjectRepository.GetSubjects();
-                return subjects.Any();
-            }
-            catch
-            {
-                throw SubjectException.DbError();
-            }
+            var subjects = subjectRepository.GetSubjects();
+            if (subjects.Any())
+                throw SubjectException.EmptyTable();
+
+            return true;
         }
 
-        public void AddHandler()
+        public void AddSubject()
         {
-            string name = "";
+            string name;
             do
             {
                 name = GradingSystemService.GetString("Provide subject name: ");
@@ -39,95 +33,72 @@ namespace GradingSystem.Services
             }
             catch
             {
-                Console.WriteLine(SubjectException.AddError());
+                throw SubjectException.AddError();
             }
         }
 
-        public void UpdateHandler()
+        public void UpdateSubject()
         {
-            if (HasSubjects())
+            try
             {
                 PrintSubjects();
-                int subjectID = GradingSystemService.GetId();
                 try
                 {
-                    var subject = subjectRepository.GetSubject(subjectID);
-                    if(subject != null)
-                    {
-                        string name = "";
-                        name = GradingSystemService.GetString("Provide subject name: ");
-                        subject.Name = string.IsNullOrWhiteSpace(name) ? subject.Name : name;
+                    var subject = GetSubject(GradingSystemService.GetInt());
+                    string name = GradingSystemService.GetString("Provide subject name: ");
+                    subject.Name = string.IsNullOrWhiteSpace(name) ? subject.Name : name;
 
-                        try
-                        {
-                            subjectRepository.UpdateSubject(subject);
-                        }
-                        catch
-                        {
-                            Console.WriteLine(SubjectException.UpdateError());
-                        }
-                    }
-                    else
+                    try
                     {
-                        Console.WriteLine(SubjectException.NotFound());
+                        subjectRepository.UpdateSubject(subject);
+                    } catch
+                    {
+                        throw SubjectException.UpdateError();
                     }
-                }
-                catch
+                } catch (SubjectException exNotFound)
                 {
-                    Console.WriteLine(SubjectException.DbError());
+                    Console.WriteLine(exNotFound.Message);
                 }
-            } else
+            } catch (SubjectException exEmptyTable)
             {
-                Console.WriteLine(SubjectException.EmptyTable());
+                Console.WriteLine(exEmptyTable.Message);
             }
         }
 
-        public void RemoveHandler()
+        public void RemoveSubject()
         {
-            if (HasSubjects())
+            try
             {
                 PrintSubjects();
-                int subjectID = GradingSystemService.GetId();
                 try
                 {
-                    var subject = subjectRepository.GetSubject(subjectID);
-                    if (subject != null)
+                    var subject = GetSubject(GradingSystemService.GetInt());
+                    try
                     {
-                        try
-                        {
-                            subjectRepository.RemoveSubject(subject);
-                        }
-                        catch
-                        {
-                            Console.WriteLine(SubjectException.RemoveError());
-                        }
+                        subjectRepository.RemoveSubject(subject);
                     }
-                    else
+                    catch
                     {
-                        Console.WriteLine(SubjectException.NotFound());
+                        throw SubjectException.RemoveError();
                     }
                 }
-                catch
+                catch (SubjectException exNotFound)
                 {
-                    Console.WriteLine(SubjectException.DbError());
+                    Console.WriteLine(exNotFound.Message);
                 }
-            } else
+
+            }
+            catch (SubjectException exEmptyTable)
             {
-                Console.WriteLine(SubjectException.EmptyTable());
+                Console.WriteLine(exEmptyTable.Message);
             }
         }
 
         public void PrintSubjects()
         {
-            if (HasSubjects())
-            {
-                subjectRepository.GetSubjects().ForEach(x => Console.WriteLine($"{x.Id}. {x.Name}"));
-                Console.WriteLine(new string('-', Menu.repeat));
-            }
-            else
-            {
-                Console.WriteLine(SubjectException.EmptyTable());
-            }
+            HasSubjects();
+            subjectRepository.GetSubjects().ForEach(x => Console.WriteLine($"{x.Id}. {x.Name}"));
+            Console.WriteLine(new string('-', Menu.repeat));
         }
 
         public List<Subject> GetSubjects()

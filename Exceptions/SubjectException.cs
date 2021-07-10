@@ -32,17 +32,17 @@ namespace GradingSystem.Exceptions
 
         public static SubjectException AddError()
         {
-            return new SubjectException("Error while adding new subject. Check if subject with same name exists already");
+            return new SubjectException("Error occured while adding new subject. Check if subject with same name exists already");
         }
 
         public static SubjectException UpdateError()
         {
-            return new SubjectException("Error while updating subject. Check if subject with same name exists already");
+            return new SubjectException("Error occured while updating subject. Check if subject with same name exists already");
         }
 
         public static SubjectException RemoveError()
         {
-            return new SubjectException("Error while removing subject");
+            return new SubjectException("Error occured while removing subject");
         }
     }
 }
