@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace GradingSystem.Models
 {
@@ -11,7 +7,6 @@ namespace GradingSystem.Models
         public int Id { get; set; }
         public string Name { get; set; }
 
-        //Relations
         public ICollection<Grade> Grades { get; set; }
 
         public Subject(string name)

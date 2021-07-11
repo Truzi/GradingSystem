@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using GradingSystem.Models;
 using GradingSystem.Exceptions;
-using GradingSystem.ExtensionMethods;
 
 namespace GradingSystem.Services
 {
@@ -16,7 +15,7 @@ namespace GradingSystem.Services
         {
             var students = studentRepository.GetStudents();
             if(!students.Any())
-                throw SubjectException.EmptyTable();
+                throw StudentException.EmptyTable();
 
             return true;
         }
@@ -36,7 +35,7 @@ namespace GradingSystem.Services
                 studentRepository.AddStudent(new Student(first, last));
             } catch
             {
-                throw SubjectException.AddError();
+                throw StudentException.AddError();
             }
         }
 
@@ -59,14 +58,14 @@ namespace GradingSystem.Services
                     }
                     catch
                     {
-                        throw SubjectException.UpdateError();
+                        throw StudentException.UpdateError();
                     }
-                } catch (SubjectException exNotFound)
+                } catch (StudentException exNotFound)
                 {
                     Console.WriteLine(exNotFound.Message);
                 }
             }
-            catch(SubjectException exEmptyTable)
+            catch(StudentException exEmptyTable)
             {
                 Console.WriteLine(exEmptyTable.Message);
             }
@@ -86,14 +85,14 @@ namespace GradingSystem.Services
                     }
                     catch
                     {
-                        throw SubjectException.RemoveError();
+                        throw StudentException.RemoveError();
                     }
-                } catch(SubjectException exNotFound)
+                } catch(StudentException exNotFound)
                 {
                     Console.WriteLine(exNotFound.Message);
                 }
                 
-            } catch(SubjectException exEmptyTable)
+            } catch(StudentException exEmptyTable)
             {
                 Console.WriteLine(exEmptyTable.Message);
             }
@@ -115,7 +114,7 @@ namespace GradingSystem.Services
         {
             var student = studentRepository.GetStudent(studentID);
             if (student == null)
-                throw SubjectException.NotFound();
+                throw StudentException.NotFound();
 
             return student;
         }

@@ -18,12 +18,12 @@ namespace GradingSystem.Exceptions
 
         public static StudentException NotFound()
         {
-            return new StudentException("You provided wrong ID");
+            return new StudentException("Student with that ID not found");
         }
 
         public static StudentException EmptyTable()
         {
-            return new StudentException("Table 'Students' is currently empty\n");
+            return new StudentException("Table 'Students' is currently empty");
         }
 
         public static StudentException AddError()

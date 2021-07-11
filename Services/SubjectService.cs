@@ -14,7 +14,7 @@ namespace GradingSystem.Services
         public bool HasSubjects()
         {
             var subjects = subjectRepository.GetSubjects();
-            if (subjects.Any())
+            if (!subjects.Any())
                 throw SubjectException.EmptyTable();
 
             return true;

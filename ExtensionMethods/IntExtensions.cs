@@ -16,7 +16,7 @@ namespace GradingSystem.ExtensionMethods
 
         public static bool IsExit(this int i)
         {
-            return i == (int)MainOptions.Exit;
+            return i != (int)MainOptions.Exit;
         }
     }
 }

@@ -62,7 +62,7 @@ namespace GradingSystem.Services
                         try
                         {
                             studentService.AddStudent();
-                        } catch(SubjectException ex)
+                        } catch(StudentException ex)
                         {
                             Console.WriteLine(ex.Message);
                         }
@@ -71,7 +71,7 @@ namespace GradingSystem.Services
                         try
                         {
                             studentService.UpdateStudent();
-                        } catch(SubjectException ex)
+                        } catch(StudentException ex)
                         {
                             Console.WriteLine(ex.Message);
                         }
@@ -80,7 +80,7 @@ namespace GradingSystem.Services
                         try
                         {
                             studentService.RemoveStudent();
-                        } catch (SubjectException ex)
+                        } catch (StudentException ex)
                         {
                             Console.WriteLine(ex.Message);
                         }
@@ -89,7 +89,7 @@ namespace GradingSystem.Services
                         try
                         {
                             studentService.PrintStudents();
-                        } catch (SubjectException ex)
+                        } catch (StudentException ex)
                         {
                             Console.WriteLine(ex.Message);
                         }
@@ -100,7 +100,7 @@ namespace GradingSystem.Services
                         IncorrectOption();
                         break;
                 }
-            } while (!option.IsExit());
+            } while (option.IsExit());
         }
 
         private void SubjectHandler()
@@ -122,13 +122,34 @@ namespace GradingSystem.Services
                         }
                         break;
                     case (int)SubjectOptions.Update:
-                        subjectService.UpdateSubject();
+                        try
+                        {
+                            subjectService.UpdateSubject();
+                        }
+                        catch (SubjectException ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
                         break;
                     case (int)SubjectOptions.Remove:
-                        subjectService.RemoveSubject();
+                        try
+                        {
+                            subjectService.RemoveSubject();
+                        }
+                        catch (SubjectException ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
                         break;
                     case (int)SubjectOptions.Print:
-                        subjectService.PrintSubjects();
+                        try
+                        {
+                            subjectService.PrintSubjects();
+                        }
+                        catch (SubjectException ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
                         break;
                     case (int)MainOptions.Exit:
                         break;
@@ -136,7 +157,7 @@ namespace GradingSystem.Services
                         IncorrectOption();
                         break;
                 }
-            } while (!option.IsExit());
+            } while (option.IsExit());
         }
 
         private void GradeHandler()
@@ -149,14 +170,21 @@ namespace GradingSystem.Services
                 switch (option)
                 {
                     case (int)GradeOptions.AccessStudent:
-                        studentService.PrintStudents();
-                        //program will ask for Id even if 'PrintStudents()' will show that table is empty
-                        //that is because i only Write Exception to the console, how can I overcome that (simple solution please)
-                        gradeService.AccessStudent(GetInt());
+                        try
+                        {
+                            studentService.PrintStudents();
+                            gradeService.AccessStudent(GetInt());
+                        } catch (StudentException exEmptyTable)
+                        {
+                            Console.WriteLine(exEmptyTable.Message);
+                        }
                         break;
                     case (int)GradeOptions.AccessSubject:
-                        subjectService.PrintSubjects();
-                        //same as above
+                        try
+                        {
+                            subjectService.PrintSubjects();
+                        }
+                        catch (SubjectException ex) { Console.WriteLine(ex.Message); }
                         gradeService.AccessSubject(GetInt());
                         break;
                     case (int)MainOptions.Exit:
@@ -165,7 +193,7 @@ namespace GradingSystem.Services
                         IncorrectOption();
                         break;
                 }
-            } while (option != 0);
+            } while (option.IsExit());
         }
 
 

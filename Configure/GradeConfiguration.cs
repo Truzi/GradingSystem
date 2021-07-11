@@ -13,7 +13,7 @@ namespace GradingSystem.Configure
     {
         public void Configure(EntityTypeBuilder<Grade> builder)
         {
-            builder.HasKey(g => new { g.StudentId, g.SubjectId });
+            builder.HasKey(g => g.Id);
 
             builder.Property(g => g.Value).IsRequired();
             builder.Property(g => g.SubjectId).IsRequired();
