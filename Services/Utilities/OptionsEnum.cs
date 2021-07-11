@@ -25,4 +25,9 @@
     {
         AddGrade = 1, UpdateGrade, RemoveGrade, PrintAllGrades, PrintGrades
     }
+    
+    public enum GradeSubjectOptions
+    {
+        AddGrades = 1, PrintGrades
+    }
 }

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using GradingSystem.Exceptions;
+using GradingSystem.Models;
+using GradingSystem.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +11,9 @@ namespace GradingSystem.Services
 {
     class GradeSubservices
     {
+        private readonly StudentService studentService = new();
+        private readonly SubjectService subjectService = new();
+        private readonly GradeRepository gradeRepository = new();
         public void AddGrade(int studentId)
         {
             try
@@ -34,6 +40,33 @@ namespace GradingSystem.Services
                 }
             }
             catch (SubjectException exEmptyTable)
+            {
+                Console.WriteLine(exEmptyTable.Message);
+            }
+        }
+
+        public void AddGrades(int subjectId)
+        {
+            try
+            {
+                studentService.HasStudents();
+                var students = studentService.GetStudents();
+                try
+                {
+                    int value = GetValue();
+                    string comment = GradingSystemService.GetString("Provide comment or leave blank: ");
+                    try
+                    {
+                        students.ForEach(s => gradeRepository.AddGrade(new Grade(value, comment, s.Id, subjectId)));
+                    } catch
+                    {
+                        throw GradeException.AddError();
+                    }
+                } catch(GradeException exValueError)
+                {
+                    Console.WriteLine(exValueError.Message);
+                }
+            } catch (StudentException exEmptyTable)
             {
                 Console.WriteLine(exEmptyTable.Message);
             }
@@ -114,6 +147,18 @@ namespace GradingSystem.Services
             Console.WriteLine(new string('-', Menu.repeat));
         }
 
+        public void PrintSubjectGrades(int subjectId)
+        {
+            var grades = GetSubjectGrades(subjectId);
+            var students = studentService.GetStudents();
+            foreach(var grade in grades)
+            {
+                var student = students.First(s => s.Id == grade.StudentId);
+                Console.WriteLine($"{grade.Id}. {grade.Value} {grade.Comment} - {student.First} {student.Last}");
+            }
+            Console.WriteLine(new string('-', Menu.repeat));
+        }
+
         public void PrintGrades(int studentId)
         {
             int subjectId;
@@ -135,6 +180,53 @@ namespace GradingSystem.Services
                 Console.WriteLine(exEmptyTable.Message);
             }
 
+        }
+        public int GetValue()
+        {
+            Console.Write("Provide grade's value: ");
+            if (!int.TryParse(Console.ReadLine(), out int i))
+                throw GradeException.ValueError();
+
+            if (i < 1 || i > 6)
+                throw GradeException.ValueError();
+
+            return i;
+        }
+
+        public List<Grade> GetStudentGrades(int studentId)
+        {
+            var grades = gradeRepository.GetStudentGrades(studentId);
+            if (!grades.Any())
+                throw GradeException.SearchError();
+
+            return grades;
+        }
+
+        public List<Grade> GetSubjectGrades(int subjectId)
+        {
+            var grades = gradeRepository.GetSubjectGrades(subjectId);
+            if (!grades.Any())
+                throw GradeException.SearchError();
+
+            return grades;
+        }
+
+        public List<Grade> GetGrades(int studentId, int subjectId)
+        {
+            var grades = gradeRepository.GetGrades(studentId, subjectId);
+            if (!grades.Any())
+                throw GradeException.SearchError();
+
+            return grades;
+        }
+
+        public Grade GetGrade(int gradeId)
+        {
+            var grade = gradeRepository.GetGrade(gradeId);
+            if (grade == null)
+                throw GradeException.NotFound();
+
+            return grade;
         }
     }
 }

@@ -11,7 +11,6 @@ namespace GradingSystem.Services
 {
     class GradeService
     {
-        private readonly GradeRepository gradeRepository = new();
         private readonly StudentService studentService = new();
         private readonly SubjectService subjectService = new();
         private readonly GradeSubservices gradeSubservices = new();
@@ -30,15 +29,14 @@ namespace GradingSystem.Services
 
         public void AccessSubject(int subjectId)
         {
-            var subject = subjectService.GetSubject(subjectId);
-            if (subject == null) Console.WriteLine(SubjectException.NotFound());
-
-            else
+            try
             {
-                Menu.GradeSubjectMenu();
+                var subject = subjectService.GetSubject(subjectId);
+                SubjectAccess(subject);
+            } catch (SubjectException exNotFound)
+            {
+                Console.WriteLine(exNotFound.Message);
             }
-
-            
         }
 
         private void StudentAccess(Student student)
@@ -109,43 +107,43 @@ namespace GradingSystem.Services
             } while (option.IsExit());
         }
 
-        public int GetValue()
+        private void SubjectAccess(Subject subject)
         {
-            Console.Write("Provide grade's value: ");
-            if (!int.TryParse(Console.ReadLine(), out int i))
-                throw GradeException.ValueError();
-
-            if (i < 1 || i > 6)
-                throw GradeException.ValueError();
-
-            return i;
+            int option;
+            do
+            {
+                Menu.GradeSubjectMenu();
+                option = GradingSystemService.GetInt();
+                switch (option)
+                {
+                    case (int)GradeSubjectOptions.AddGrades:
+                        try
+                        {
+                            gradeSubservices.AddGrades(subject.Id);
+                        }
+                        catch (GradeException exAddError)
+                        {
+                            Console.WriteLine(exAddError.Message);
+                        }
+                        break;
+                    case (int)GradeSubjectOptions.PrintGrades:
+                        try
+                        {
+                            gradeSubservices.PrintSubjectGrades(subject.Id);
+                        }
+                        catch (GradeException exSearchError)
+                        {
+                            Console.WriteLine(exSearchError.Message);
+                        }
+                        break;
+                    case (int)MainOptions.Exit:
+                        break;
+                    default:
+                        GradingSystemService.IncorrectOption();
+                        break;
+                }
+            } while (option.IsExit());
         }
 
-        public List<Grade> GetStudentGrades(int studentId)
-        {
-            var grades = gradeRepository.GetStudentGrades(studentId);
-            if (!grades.Any())
-                throw GradeException.SearchError();
-
-            return grades;
-        }
-
-        public List<Grade> GetGrades(int studentId, int subjectId)
-        {
-            var grades = gradeRepository.GetGrades(studentId, subjectId);
-            if (!grades.Any())
-                throw GradeException.SearchError();
-
-            return grades;
-        }
-
-        public Grade GetGrade(int gradeId)
-        {
-            var grade = gradeRepository.GetGrade(gradeId);
-            if (grade == null)
-                throw GradeException.NotFound();
-
-            return grade;
-        }
     }
 }

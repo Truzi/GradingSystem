@@ -62,9 +62,7 @@ namespace GradingSystem.Services
         public static void GradeSubjectMenu()
         {
             Console.WriteLine("1. Add grades");
-            Console.WriteLine("2. Update grades");
-            Console.WriteLine("3. Remove grades");
-            Console.WriteLine("4. Show grades for this subject");
+            Console.WriteLine("2. Show grades for this subject");
             Console.WriteLine("0. Exit to upper menu");
             Console.WriteLine(new string('-', repeat));
         }
